@@ -8,7 +8,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ManagerRegistry;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
@@ -30,19 +30,28 @@ class EnquiryController extends AbstractController
     private $registry;
     /** @var MailerInterface */
     private $mailer;
+    /** @var EnquiryRepository */
+    private $enquiryRepository;
+    /** @var RequestValidator */
+    private $requestValidator;
 
     /**
      * EnquiryController constructor.
      * @param ManagerRegistry $registry
      * @param LoggerInterface $logger
+     * @param MailerInterface $mailer
      */
-    public function __construct(ManagerRegistry $registry, LoggerInterface $logger, MailerInterface $mailer)
+    public function __construct(ManagerRegistry $registry, 
+                                LoggerInterface $logger, 
+                                MailerInterface $mailer,
+                                EnquiryRepository $enquiryRepository,
+                                RequestValidator $requestValidator)
     {
         $this->registry = $registry;
         $this->logger = $logger;
         $this->mailer = $mailer;
-        $this->enquiryRepository = new EnquiryRepository($registry, $logger);
-        $this->requestValidator = new RequestValidator($registry, $logger);
+        $this->enquiryRepository = $enquiryRepository;
+        $this->requestValidator = $requestValidator;
     }
 
     /**
